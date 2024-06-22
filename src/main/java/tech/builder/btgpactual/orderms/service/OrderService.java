@@ -1,13 +1,16 @@
 package tech.builder.btgpactual.orderms.service;
 
-import org.springframework.stereotype.Service;
-import tech.builder.btgpactual.orderms.entity.OrderEntity;
-import tech.builder.btgpactual.orderms.entity.OrderItem;
-import tech.builder.btgpactual.orderms.listener.dto.OrdderCreateEvent;
-import tech.builder.btgpactual.orderms.repository.OrderRepository;
-
-import java.math.BigDecimal;
 import java.util.List;
+import java.math.BigDecimal;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import tech.builder.btgpactual.orderms.entity.OrderItem;
+import tech.builder.btgpactual.orderms.entity.OrderEntity;
+import tech.builder.btgpactual.orderms.repository.OrderRepository;
+import tech.builder.btgpactual.orderms.controller.dto.OrderResponse;
+import tech.builder.btgpactual.orderms.listener.dto.OrdderCreateEvent;
+
 
 @Service
 public class OrderService {
@@ -44,5 +47,10 @@ public class OrderService {
                 .map(i -> i.preco().multiply(BigDecimal.valueOf(i.quantidade())))
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
+    }
+
+    public Page<OrderResponse> findAllByCustomerId(Long customerId, PageRequest pageRequest){
+        var orders = orderRepository.findAllByCustomerId( customerId, pageRequest);
+        return orders.map(OrderResponse::fromEntity);
     }
 }
